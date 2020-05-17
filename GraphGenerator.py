@@ -16,7 +16,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 rSeed = 1731
 rd.seed(rSeed)
 nrd.seed(rSeed)
-freqs, size, dE, numTransitionGraphs, modules, pModular, finalEdges, freqBound = [], 100, 20, 50, 5, 0.98, 1000, 3
+freqs, size, dE, numTransitionGraphs, modules, pModular, finalEdges, freqBound = [], 100, 20, 1000, 5, 0.98, 1000, 3
 clusters = []
 
 #head_dir = "/data/jux/bqqian/Kuramoto"

@@ -27,7 +27,7 @@ import small_world as sw
 head_dir = "C:/Users/billy/PycharmProjects/Kuramoto"
 #head_dir = "/data/jux/bqqian/Kuramoto"
 
-N, alpha, dt, frequencyBound, steps, startDelay, endDelay = gg.size, .3, .02, gg.freqBound, 1000, 0, 0
+N, alpha, dt, frequencyBound, steps, startDelay, endDelay = gg.size, .2, .02, gg.freqBound, 500, gg.numTransitionGraphs// 3,gg.numTransitionGraphs // 3
 m = 2
 D = 1
 f = dt / m
@@ -68,6 +68,17 @@ def get_potential(A, inst_phases):
                 sum += 1 - math.cos(inst_phases[r] - inst_phases[c])
     return alpha * 2 * sum
 
+def Jacobian(init, t, A, w_nat, a, M):
+    theta, omega = init[:N, ], init[N:, ]
+    block_11 = np.zeros((N, N))
+    block_21 = np.identity(N)
+    block_22 = -D/m * np.identity(N)
+    block_12 = np.zeros((N,N))
+    for i in range(N):
+        block_12[i] = np.inner(A[i], np.cos(theta - theta[i]))
+        block_12[i,i] = -np.sum(block_21[i])
+    block_12 *= a/M
+    return np.block([[block_11, block_12], [block_21, block_22]])
 
 def Kura(init, t, A, w_nat, a, M):
     theta, omega = init[:N, ], init[N:, ]
@@ -78,13 +89,13 @@ def Kura(init, t, A, w_nat, a, M):
 
 
 def runRK2(A, phases0, w_nat, w0, a, M, time):
-    result = odeint(Kura, np.concatenate([phases0, w0]), time, args=(A, w_nat, a, M), rtol = 1e-12, atol = 1e-12)
+    result = odeint(Kura, np.concatenate([phases0, w0]), time, Dfun = Jacobian, args=(A, w_nat, a, M), rtol = 1e-12, atol = 1e-12)
     theta, omega = result[:, :N], result[:, N:]
     for t in range(len(theta)-1):
         complex_r = complex_OP2(theta[t])
         standardOPData.append(abs(complex_r))
        # complex_OP.append(complex_r)
-        inst_phases.append(theta[t])
+        #inst_phases.append(theta[t])
        # inst_freqs.append(omega[t])
         # localOPData.append(localOrderParameter(A, theta[t]))
         # localOPData.append(LOP2(A, theta[t], nz))
@@ -268,6 +279,8 @@ def runSim2(AMList, ICs, natFreqs, a, M):
     global end_s, end_f, oParameterData, standardOPData, localOPData, averagedOPData, averagedLocalOPData, inst_freqs, inst_phases
 
     init_phases, init_freqs = ICs
+    init_phases = np.array(init_phases)
+    init_freqs = np.array(init_freqs)
     time = np.linspace(0, dt * steps, steps)
     theta_0, w_0 = runRK2(AMList[0], init_phases, natFreqs, init_freqs, a, M, time)
     endTheta, endW = theta_0[len(theta_0) - 1, :], w_0[len(w_0) - 1, :]
@@ -352,7 +365,7 @@ def plot(AList, col, width=.4, size=25, transp=1, e_s=end_s, e_f=end_f, IP=inst_
     plt.savefig('OP_mass_randomstuff.pdf')
     #plt.savefig('OP_mass_randomstuff.png')
     '''
-    '''
+
     f4 = plt.figure(4)
     plt.xlabel('Graph')
     plt.ylabel('Time-averaged Order Parameter')
@@ -366,8 +379,8 @@ def plot(AList, col, width=.4, size=25, transp=1, e_s=end_s, e_f=end_f, IP=inst_
     # plt.scatter(list(range(len(ta_OP))), ta_OP, color='black', s = 15)
     # plt.axvline(x=(len(AList) + startDelay), color='red', linewidth=0.2)
     # plt.axvline(x=(startDelay), color='red', linewidth=0.2)
-    # plt.axvline(x=(len(AList) / 2.0 + startDelay), color='orange', linewidth=0.2)
-    '''
+    plt.axvline(x=(len(AList) / 2.0 + startDelay), color='orange', linewidth=0.2)
+
     # IP = np.array(IP)
     # IF = np.array(IF)
     # f_phase_snapshot_cont = plt.figure(162)
@@ -534,27 +547,29 @@ def plot(AList, col, width=.4, size=25, transp=1, e_s=end_s, e_f=end_f, IP=inst_
     #     plt.pause(1e-10)
     # plt.close()
 
-    sorted_indices = np.argsort(gg.freqs)
-    IP_sorted = np.transpose(IP)[sorted_indices[::1]]
-    IP_sorted = np.transpose(IP_sorted)
-    IP_sorted = (np.array(IP_sorted) + np.pi) % (2 * np.pi) - np.pi
-    IP_sorted = np.transpose(IP_sorted)
-    timeseries = plt.figure(1000, dpi = 3000)
-    plt.rcParams.update({'font.size': 16})
+    # sorted_indices = np.argsort(gg.freqs)
+    # IP_sorted = np.transpose(IP)[sorted_indices[::1]]
+    # IP_sorted = np.transpose(IP_sorted)
+    # IP_sorted = (np.array(IP_sorted) + np.pi) % (2 * np.pi) - np.pi
+    # IP_sorted = np.transpose(IP_sorted)
+    # timeseries = plt.figure(1000, dpi = 3000)
+    # plt.rcParams.update({'font.size': 16})
+    #
+    # plt.rcParams.update({'font.size': 16})
+    #
+    # plt.rcParams.update({'font.size': 16})
+    # ax = plt.gca()
+    # print(timeArray)
+    # im = ax.imshow(IP_sorted[:, ::10], cmap = 'twilight', interpolation = 'none', extent=[0, max(timeArray), 100, 1], aspect=max(timeArray)/(3*N))
+    # plt.xlabel("time, t")
+    # plt.ylabel("Oscillator ID")
+    # yticks = np.arange(0, 120, 20)
+    # plt.yticks(yticks)
+    # plt.colorbar(im, cax = timeseries.add_axes([0.93, 0.32, 0.023, 0.35]))
+    # plt.savefig('phase_timeseries_density_point3.pdf', bbox_inches='tight')
+    # plt.savefig('phase_timeseries_density_point3.png', bbox_inches='tight')
 
-    plt.rcParams.update({'font.size': 16})
 
-    plt.rcParams.update({'font.size': 16})
-    ax = plt.gca()
-    print(timeArray)
-    im = ax.imshow(IP_sorted[:, ::10], cmap = 'twilight', interpolation = 'none', extent=[0, max(timeArray), 100, 1], aspect=max(timeArray)/(3*N))
-    plt.xlabel("time, t")
-    plt.ylabel("Oscillator ID")
-    yticks = np.arange(0, 120, 20)
-    plt.yticks(yticks)
-    plt.colorbar(im, cax = timeseries.add_axes([0.93, 0.32, 0.023, 0.35]))
-    plt.savefig('phase_timeseries_density_point3.pdf', bbox_inches='tight')
-    plt.savefig('phase_timeseries_density_point3.png', bbox_inches='tight')
     '''
     # inst_phases = np.arctan2(np.sin(inst_phases), np.cos(inst_phases))
     sample = np.random.choice(N, 5, replace=False)
@@ -712,7 +727,7 @@ def get_AList(start=None, end=None, final=None, dens_const=True, transitions = g
         #AList = AList[::10]
         #AList.append(last_element)
         AList = AList + list(reversed(AList))
-    return np.array(AList), gg.freqs
+    return np.array(AList), np.array(gg.freqs)
 
 
 def run_and_plot(numTrials, AList, ICs, a, M, freqs, ss_diffs_file, ta_OP_file, end_state=None):
@@ -802,18 +817,19 @@ if __name__ == '__main__':
 # argument 1: which graphs to use. arg 2: which coupling. arg 3: num mass trials
 
    # arg_1 = int(sys.argv[1]) - 1 #Job number, ranging from 0 to 255
-    arg_1 = 0
+    arg_1 = 7
 
     ER_Graphs.append(gg.readMatrixFromFile(ER_Files[arg_1]))
+    ER_Graphs.append(gg.readMatrixFromFile(ER_Files[arg_1+1]))
     ER_Sparse_Graphs.append(gg.readMatrixFromFile(ER_Sparse_Files[arg_1]))
     ER_Dense_Graphs.append(gg.readMatrixFromFile(ER_Dense_Files[arg_1]))
     SA_Graphs.append(gg.readMatrixFromFile(SA_Files[arg_1]))
     #MA_Graphs.append(gg.readMatrixFromFile(misaligned_files[0]))
     #freq_mod_Graphs.append(gg.readMatrixFromFile(freq_mod_Files[0]))
 
-    AList, freqs = get_AList(ER_Sparse_Graphs[0], ER_Dense_Graphs[0], dens_const=False)
+    AList, freqs = get_AList(ER_Graphs[0], ER_Graphs[0], dens_const=True)
     ICs = get_ICs()
-    #freqs = gg.readMatrixFromFile(open(path_random_nat_freqs+str(arg_1)+".txt", "r"))[0]
+    #freqs = gg.readMatrifxFromFile(open(path_random_nat_freqs+str(2)+".txt", "r"))[0]
     #ICs = get_ICs(open(path_random_ICs+str(arg_1)+".txt", "r"))
     #ICs = get_ICs(open(path_final_states+str(arg_1)+".txt", "r"))
     #ICs = get_ICs()
@@ -840,18 +856,18 @@ if __name__ == '__main__':
     # gg.printArrayToFile(end_state_ICs, end_states[0][1])
     # end_state_ICs.close()
 
-    inst_phases_file = open("inst_phases_density.txt", "w")
-    sorted_indices = np.argsort(gg.freqs)
-    IP_sorted = np.transpose(inst_phases)[sorted_indices[::1]]
-    IP_sorted = np.transpose(inst_phases)
-    IP_sorted = (np.array(inst_phases) + np.pi) % (2 * np.pi) - np.pi
-    IP_sorted = np.transpose(inst_phases)
-    gg.printMatrixToFile(IP_sorted,inst_phases_file)
-    inst_phases_file.close()
+    # inst_phases_file = open("inst_phases_density.txt", "w")
+    # sorted_indices = np.argsort(gg.freqs)
+    # IP_sorted = np.transpose(inst_phases)[sorted_indices[::1]]
+    # IP_sorted = np.transpose(inst_phases)
+    # IP_sorted = (np.array(inst_phases) + np.pi) % (2 * np.pi) - np.pi
+    # IP_sorted = np.transpose(inst_phases)
+    # gg.printMatrixToFile(IP_sorted,inst_phases_file)
+    # inst_phases_file.close()
 
 
     plot(AList, 'black')
 
 
 
-    #plt.show()
+    plt.show()

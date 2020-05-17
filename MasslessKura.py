@@ -13,7 +13,7 @@ import random as rd
 import sys
 from queue import *
 #from matplotlib.ticker import ScalarFormatter,AutoMinorLocator
-N, alpha, dt, frequencyBound, steps, startDelay, endDelay= gg.size, .15, .02, gg.freqBound, 1000, 0, 0
+N, alpha, dt, frequencyBound, steps, startDelay, endDelay= gg.size, .15, .02, gg.freqBound, 1000, 1000, 0
 m = 0
 oParameterData=[]
 standardOPData =[]

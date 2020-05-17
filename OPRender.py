@@ -196,7 +196,8 @@ def fancy_NoOffset(fignum,inputSize, data, filename = None):
     if filename is not None:
         plt.savefig(filename +'.pdf')
         plt.savefig(filename + '.png')
-'''
+
+
 density_std = np.zeros(len(TA_OPs_density[0]))
 for i in range(len(density_std)):
     density_std[i] = np.std([TA_OPs_density[j][i] for j in range(len(TA_OPs_density))])
@@ -205,32 +206,28 @@ SA_std = np.zeros(len(TA_OPs_SA[0]))
 for i in range(len(density_std)):
     SA_std[i] = np.std([TA_OPs_SA[j][i] for j in range(len(TA_OPs_SA))])
 
-plt.rcParams.update({'font.size': 16})
-f4 = plt.figure(4, dpi = 3000)
-plt.xlabel('Graph Index', size = 20)
-plt.ylabel('Order Parameter, '+r'$\langle R \rangle$', size = 20)
-plt.rcParams.update({'font.size': 16})
+f4 = plt.figure(4)
+plt.xlabel('Graph Index')
+plt.ylabel('Order Parameter, '+r'$\langle R \rangle$')
 plt.tight_layout()
 #plt.title("Averaged Data changing Density")
 axes = plt.gca()
 axes.set_ylim([0, 1])
 axes.set_xlim([-1, 51])
-plt.rcParams.update({'font.size': 16})
-plt.scatter(list(range(len(TA_OPs_density_avg) // 2)), TA_OPs_density_avg[0: (len(TA_OPs_density_avg) // 2)], color='black',
+for i in range(0,25,25):
+    plt.scatter(list(range(len(TA_OPs_density_avg) // 2)), TA_OPs_density[7][0: (len(TA_OPs_density_avg) // 2)], color='black',
                 marker='>', facecolors='none', s=25, lw=.5)
 # plt.fill_between(list(range(len(TA_OPs_density_avg) // 2)), TA_OPs_density_avg[0: (len(TA_OPs_density_avg) // 2)]- density_std[0: (len(TA_OPs_density_avg) // 2)],
 #                  TA_OPs_density_avg[0: (len(TA_OPs_density_avg) // 2)] + density_std[0: (len(TA_OPs_density_avg) // 2)], color = "blue", alpha =.1)
-plt.scatter(list(range(len(TA_OPs_density_avg) // 2)), list(reversed(TA_OPs_density_avg[len(TA_OPs_density_avg) // 2:])),
-                color='black', marker='<', s=25, lw=.5, edgecolors='black')
+    plt.scatter(list(range(len(TA_OPs_density_avg) // 2)), list(reversed(TA_OPs_density[7][len(TA_OPs_density_avg) // 2:])),
+                    color='black', marker='<', s=25, lw=.5, edgecolors='black')
 # plt.fill_between(list(range(len(TA_OPs_density_avg) // 2)), np.array(list(reversed(TA_OPs_density_avg[len(TA_OPs_density_avg) // 2:])))- np.array(list(reversed(density_std[(len(TA_OPs_density_avg) // 2):]))),
 #                  np.array(list(reversed(TA_OPs_density_avg[len(TA_OPs_density_avg) // 2:]))) + np.array(list(
 #                      reversed(density_std[(len(TA_OPs_density_avg) // 2):]))), color = "red", alpha =.1)
-plt.savefig('changing_density.pdf')
-plt.savefig('changing_density.png')
 
-f5 = plt.figure(5, dpi = 3000)
-plt.xlabel('Graph Index', size = 20)
-plt.ylabel('Order Parameter, '+r'$\langle R \rangle$', size = 20)
+f5 = plt.figure(5)
+plt.xlabel('Graph Index')
+plt.ylabel('Order Parameter, '+r'$\langle R \rangle$')
 plt.tight_layout()
 #plt.title("Averaged Data Constant Density")
 axes = plt.gca()
@@ -244,17 +241,16 @@ tick_locs = np.arange(16,76, 10)
 labels = np.arange(0, 60, 10)
 plt.xticks(tick_locs, labels = labels)
 
-plt.scatter(list(range(len(TA_OPs_SA_avg) // 2)), TA_OPs_SA_avg[0: (len(TA_OPs_SA_avg) // 2)], color='black',
+for i in range(0,25,25):
+    plt.scatter(list(range(len(TA_OPs_SA_avg) // 2)), TA_OPs_SA[4][0: (len(TA_OPs_SA_avg) // 2)], color='black',
             marker='>', facecolors='none', s=25, lw=.5)
 # plt.fill_between(list(range(len(TA_OPs_SA_avg) // 2)), TA_OPs_SA_avg[0: (len(TA_OPs_SA_avg) // 2)]- SA_std[0: (len(TA_OPs_SA_avg) // 2)],
 #                 TA_OPs_SA_avg[0: (len(TA_OPs_SA_avg) // 2)] + SA_std[0: (len(TA_OPs_SA_avg) // 2)], color = "blue", alpha =.1)
-plt.scatter(list(range(len(TA_OPs_SA_avg) // 2)), list(reversed(TA_OPs_SA_avg[len(TA_OPs_SA_avg) // 2:])),
+    plt.scatter(list(range(len(TA_OPs_SA_avg) // 2)), list(reversed(TA_OPs_SA[4][len(TA_OPs_SA_avg) // 2:])),
             color='black', marker='<', s=25, lw=.5, edgecolors='black')
 # plt.fill_between(list(range(len(TA_OPs_SA_avg) // 2)), np.array(list(reversed(TA_OPs_SA_avg[len(TA_OPs_SA_avg) // 2:])))- np.array(list(reversed(SA_std[(len(TA_OPs_SA_avg) // 2):]))),
 #                 np.array(list(reversed(TA_OPs_SA_avg[len(TA_OPs_SA_avg) // 2:]))) + np.array(list(
 #                    reversed(SA_std[(len(TA_OPs_SA_avg) // 2):]))), color = "red", alpha =.1)
-plt.savefig('const_density.pdf')
-plt.savefig('const_density.png')
 '''
 plt.rcParams.update({'font.size': 16})
 f6 = plt.figure(6, dpi = 3000)
@@ -291,7 +287,7 @@ plt.axhline(y=TA_OPs_SA_avg[15], color='green', linestyle="--", dashes = (5, 5),
 plt.savefig("MA2.pdf")
 plt.savefig("MA.png")
 
-'''
+
 f7 = plt.figure(7)
 plt.xlabel('Graph')
 plt.ylabel('Order Parameter, '+r'$\langle R \rangle$', size = 20)
@@ -319,7 +315,7 @@ plt.scatter(list(range(len(TA_OPs_MA_avg) // 2)), TA_OPs_MA_avg[0: (len(TA_OPs_M
 plt.scatter(list(range(len(TA_OPs_MA_avg) // 2)), list(reversed(TA_OPs_MA_avg[len(TA_OPs_MA_avg) // 2:])),
                 color='red', marker='<', s=25, lw=.5, edgecolors='black')
 plt.axvline(x=mK.startDelay, color='red', linewidth=1)
-'''
+
 f10 = plt.figure(10, dpi = 3000)
 plt.xlabel('Graph Index', size = 20)
 plt.rcParams.update({'font.size': 16})
@@ -373,7 +369,8 @@ plt.axvline(x=mK.startDelay, color='red', linewidth=1)
 # fancy_plot(21, 50, 16, TA_OPs_SA_massless_avg, 25, filename = "TA_OPs_massless_SA")
 
 print(TA_OPs_SA_avg[15])
-#plt.show()
+'''
+plt.show()
 
 
 
