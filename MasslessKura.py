@@ -13,7 +13,7 @@ import random as rd
 import sys
 from queue import *
 #from matplotlib.ticker import ScalarFormatter,AutoMinorLocator
-N, alpha, dt, frequencyBound, steps, startDelay, endDelay= gg.size, .15, .02, gg.freqBound, 1000, 1000, 0
+N, alpha, dt, frequencyBound, steps, startDelay, endDelay= gg.size, .15, .02, gg.freqBound, 250, 0, 0
 m = 0
 oParameterData=[]
 standardOPData =[]
@@ -89,7 +89,7 @@ def runRK2(A, phases0, w_nat, time):
         standardOPData.append(abs(complex_OP2(result[t])))
         # complex_OP.append(complex_r)
         inst_phases.append(result[t])
-        #inst_freqs.append((result[t+1]-result[t])/dt)
+        inst_freqs.append((result[t+1]-result[t])/dt)
            # inst_kinetic.append(get_kinetic(inst_freqs[len(inst_freqs)-1]))
            # inst_potential.append(get_potential(A, result[t]))
 
@@ -295,62 +295,6 @@ plt.savefig('massless_freqs__nolabel_notick.pdf')
 plt.savefig('massless_freqs__nolabel_notick.png')
 
 '''
-# x = np.ones((100, 3))
-# y = np.ones((100, 3))
-#
-# x[:, 0:3] = (1, 0, 0)
-# y[:, 0:3] = (0, 1, 0)
-# c = np.linspace(0, 1, 100)[:, None]
-# gradient = x + (y - x) * c
-# f_phase_fancy = plt.figure(10)
-# plt.figure(dpi=200)
-# plt.tight_layout()
-# IP = (np.array(inst_phases) + np.pi) % (2 * np.pi) - np.pi
-# IF = np.array(IF)
-#
-# sorted_indices = np.argsort(gg.freqs)
-# IP_sorted = np.transpose(IP)[sorted_indices[::1]]
-# IF_sorted = np.transpose(IF)[sorted_indices[::1]]
-# IP_sorted = np.transpose(IP_sorted)
-# IF_sorted = np.transpose(IF_sorted)
-# plt.pause(15)
-# for i in range(0, len(timeArray), 20):
-#     plt.clf()
-#     plt.xlabel('phase')
-#     plt.ylabel('frequency')
-#     title = "Phase Space Plot" + " (Time: " + str(round(i * dt)) + ")"
-#     if i / steps <= startDelay:
-#         title += " (Start Delay)"
-#     elif i / steps >= len(AList) + startDelay:
-#         title += " (End Delay)"
-#     plt.title(title)
-#     axes = plt.gca()
-#     axes.set_xlim([-np.pi, np.pi])
-#     axes.set_ylim([-5, 5])
-#     if i >= 4:
-#         plt.scatter(IP_sorted[i - 4, ::], IF_sorted[i - 4, ::], c=gradient, s=8, alpha=.2)
-#         plt.scatter(IP_sorted[i-3, ::], IF_sorted[i-3, ::], c=gradient, s=11, alpha = .4)
-#         plt.scatter(IP_sorted[i - 2, ::], IF_sorted[i - 2, ::], c=gradient, s=14, linewidth=.2,
-#                     alpha=.6)
-#         plt.scatter(IP_sorted[i - 1, ::], IF_sorted[i - 1, ::], c=gradient, s=17, linewidth=.2,
-#                     alpha=.8)
-#     # curr_graph = AList[i // steps]
-#     # x_coords = []
-#     # y_coords = []
-#     # for r in range(len(curr_graph)):
-#     #     for c in range(r, len(curr_graph)):
-#     #         if curr_graph[r][c] == 1:
-#     #             x_coords.append(IP_sorted[i, r])
-#     #             x_coords.append(IP_sorted[i, c])
-#     #             y_coords.append(IF_sorted[i, r])
-#     #             y_coords.append(IF_sorted[i, c])
-#     # plt.plot(x_coords, y_coords, linewidth=.1, color="black", alpha=.3)
-#     plt.scatter(IP_sorted[i], IF_sorted[i], c=gradient, s=20, edgecolors = 'black', linewidth = .2)
-#     plt.pause(1e-10)
-# plt.close()
-
-
-#plt.show(block=True)
 
 OPs = []
 ta_OPs = []
@@ -420,47 +364,101 @@ ER_Dense_Graphs.append(gg.readMatrixFromFile(ER_Dense_Files[arg_1]))
 AList, freqs = get_AList(ER_Graphs[0], SA_Graphs[0], dens_const=True)
 ICs = get_ICs(open(path_random_ICs+str(arg_1)+".txt", "r"))
 
-#freqs = gg.readMatrixFromFile(open(path_random_nat_freqs+str(arg_1)+".txt", "r"))[0]
 runSim(AList, ICs, freqs)
-
-TA_OP_file = open("blank "+str(arg_1)+".txt", "w")
-gg.printArrayToFile(averagedOPData, TA_OP_file)
-TA_OP_file.close()
-
-inst_phases_file = open("inst_phases_density_massless.txt", "w")
-sorted_indices = np.argsort(gg.freqs)
-IP_sorted = np.transpose(inst_phases)[sorted_indices[::1]]
-IP_sorted = np.transpose(IP_sorted)
-IP_sorted = (np.array(IP_sorted) + np.pi) % (2 * np.pi) - np.pi
-IP_sorted = np.transpose(IP_sorted)
-gg.printMatrixToFile(IP_sorted,inst_phases_file)
-inst_phases_file.close()
-
-print(IP_sorted.shape)
-print(len(standardOPData))
-timeseries = plt.figure(1000, dpi=3000)
-plt.rcParams.update({'font.size': 16})
-
-plt.rcParams.update({'font.size': 16})
-
-plt.rcParams.update({'font.size': 16})
-ax = plt.gca()
 timeArray = [dt* i for i in range(len(standardOPData))]
-print(timeArray)
-im = ax.imshow(IP_sorted[:, ::10], cmap='twilight', interpolation='none', extent=[0, max(timeArray), 100, 1],
-               aspect=max(timeArray) / (3 * N))
-plt.xlabel("time, t")
-plt.ylabel("Oscillator ID")
-yticks = np.arange(0, 120, 20)
-plt.yticks(yticks)
-plt.colorbar(im, cax=timeseries.add_axes([0.93, 0.32, 0.023, 0.35]))
-plt.savefig('phase_timeseries_SA_1000_massless.pdf', bbox_inches='tight')
-plt.savefig('phase_timeseries_SA_1000_massless.png', bbox_inches='tight')
+
+x = np.ones((100, 3))
+y = np.ones((100, 3))
+
+x[:, 0:3] = (1, 0, 0)
+y[:, 0:3] = (0, 1, 0)
+c = np.linspace(0, 1, 100)[:, None]
+gradient = x + (y - x) * c
+f_phase_fancy = plt.figure(10, dpi = 200)
+plt.tight_layout()
+IP = (np.array(inst_phases) + np.pi) % (2 * np.pi) - np.pi
+IF = np.array(inst_freqs)
+
+sorted_indices = np.argsort(gg.freqs)
+IP_sorted = np.transpose(IP)[sorted_indices[::1]]
+IF_sorted = np.transpose(IF)[sorted_indices[::1]]
+IP_sorted = np.transpose(IP_sorted)
+IF_sorted = np.transpose(IF_sorted)
+plt.pause(15)
+
+for i in range(0, len(timeArray), 3):
+    plt.clf()
+    plt.xlabel('phase')
+    plt.ylabel('frequency')
+    title = "Phase Space Plot" + " (Time: " + str(round(i * dt)) + ")"
+    if i / steps <= startDelay:
+        title += " (Start Delay)"
+    elif i / steps >= len(AList) + startDelay:
+        title += " (End Delay)"
+    plt.title(title)
+    axes = plt.gca()
+    axes.set_xlim([-np.pi, np.pi])
+    axes.set_ylim([-5, 5])
+    if i >= 4:
+        plt.scatter(IP_sorted[i - 4, ::], IF_sorted[i - 4, ::], c=gradient, s=8, alpha=.2)
+        plt.scatter(IP_sorted[i-3, ::], IF_sorted[i-3, ::], c=gradient, s=11, alpha = .4)
+        plt.scatter(IP_sorted[i - 2, ::], IF_sorted[i - 2, ::], c=gradient, s=14, linewidth=.2,
+                    alpha=.6)
+        plt.scatter(IP_sorted[i - 1, ::], IF_sorted[i - 1, ::], c=gradient, s=17, linewidth=.2,
+                    alpha=.8)
+    # curr_graph = AList[i // steps]
+    # x_coords = []
+    # y_coords = []
+    # for r in range(len(curr_graph)):
+    #     for c in range(r, len(curr_graph)):
+    #         if curr_graph[r][c] == 1:
+    #             x_coords.append(IP_sorted[i, r])
+    #             x_coords.append(IP_sorted[i, c])
+    #             y_coords.append(IF_sorted[i, r])
+    #             y_coords.append(IF_sorted[i, c])
+    # plt.plot(x_coords, y_coords, linewidth=.1, color="black", alpha=.3)
+    plt.scatter(IP_sorted[i], IF_sorted[i], c=gradient, s=20, edgecolors = 'black', linewidth = .2)
+    plt.pause(1e-10)
+plt.close()
+
+
+# TA_OP_file = open("blank "+str(arg_1)+".txt", "w")
+# gg.printArrayToFile(averagedOPData, TA_OP_file)
+# TA_OP_file.close()
+#
+# inst_phases_file = open("inst_phases_density_massless.txt", "w")
+# sorted_indices = np.argsort(gg.freqs)
+# IP_sorted = np.transpose(inst_phases)[sorted_indices[::1]]
+# IP_sorted = np.transpose(IP_sorted)
+# IP_sorted = (np.array(IP_sorted) + np.pi) % (2 * np.pi) - np.pi
+# IP_sorted = np.transpose(IP_sorted)
+# gg.printMatrixToFile(IP_sorted,inst_phases_file)
+# inst_phases_file.close()
+#
+# print(IP_sorted.shape)
+# print(len(standardOPData))
+# timeseries = plt.figure(1000, dpi=3000)
+# plt.rcParams.update({'font.size': 16})
+#
+# plt.rcParams.update({'font.size': 16})
+#
+# plt.rcParams.update({'font.size': 16})
+# ax = plt.gca()
+# timeArray = [dt* i for i in range(len(standardOPData))]
+# print(timeArray)
+# im = ax.imshow(IP_sorted[:, ::10], cmap='twilight', interpolation='none', extent=[0, max(timeArray), 100, 1],
+#                aspect=max(timeArray) / (3 * N))
+# plt.xlabel("time, t")
+# plt.ylabel("Oscillator ID")
+# yticks = np.arange(0, 120, 20)
+# plt.yticks(yticks)
+# plt.colorbar(im, cax=timeseries.add_axes([0.93, 0.32, 0.023, 0.35]))
+# plt.savefig('phase_timeseries_SA_1000_massless.pdf', bbox_inches='tight')
+# plt.savefig('phase_timeseries_SA_1000_massless.png', bbox_inches='tight')
 
 # gg.printArrayToFile(end_state_ICs, end_states[0][0])
 # gg.printArrayToFile(end_state_ICs, end_states[0][1])
 # end_state_ICs.close()
 
 
-
-plt.interactive(False)
+plt.show()

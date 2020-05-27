@@ -215,7 +215,7 @@ axes = plt.gca()
 axes.set_ylim([0, 1])
 axes.set_xlim([-1, 51])
 for i in range(0,25,25):
-    plt.scatter(list(range(len(TA_OPs_density_avg) // 2)), TA_OPs_density[7][0: (len(TA_OPs_density_avg) // 2)], color='black',
+    plt.scatter(list(range(len(TA_OPs_density_avg) // 2)), TA_OPs_density[15][0: (len(TA_OPs_density_avg) // 2)], color='black',
                 marker='>', facecolors='none', s=25, lw=.5)
 # plt.fill_between(list(range(len(TA_OPs_density_avg) // 2)), TA_OPs_density_avg[0: (len(TA_OPs_density_avg) // 2)]- density_std[0: (len(TA_OPs_density_avg) // 2)],
 #                  TA_OPs_density_avg[0: (len(TA_OPs_density_avg) // 2)] + density_std[0: (len(TA_OPs_density_avg) // 2)], color = "blue", alpha =.1)
@@ -242,7 +242,7 @@ labels = np.arange(0, 60, 10)
 plt.xticks(tick_locs, labels = labels)
 
 for i in range(0,25,25):
-    plt.scatter(list(range(len(TA_OPs_SA_avg) // 2)), TA_OPs_SA[4][0: (len(TA_OPs_SA_avg) // 2)], color='black',
+    plt.scatter(list(range(len(TA_OPs_SA_avg) // 2)), TA_OPs_SA[17][0: (len(TA_OPs_SA_avg) // 2)], color='black',
             marker='>', facecolors='none', s=25, lw=.5)
 # plt.fill_between(list(range(len(TA_OPs_SA_avg) // 2)), TA_OPs_SA_avg[0: (len(TA_OPs_SA_avg) // 2)]- SA_std[0: (len(TA_OPs_SA_avg) // 2)],
 #                 TA_OPs_SA_avg[0: (len(TA_OPs_SA_avg) // 2)] + SA_std[0: (len(TA_OPs_SA_avg) // 2)], color = "blue", alpha =.1)
@@ -361,15 +361,15 @@ plt.scatter(list(range(len(TA_OPs_Mod_avg) // 2)), list(reversed(TA_OPs_Mod_avg[
 plt.axvline(x=mK.startDelay, color='red', linewidth=1)
 #plt.show()
 
-
+'''
 #fancy_plot(17, 250, 83, TA_OPs_250_avg, 15)
 # fancy_plot(18, 500, 166, TA_OPs_500_avg, 10, linewidth = .005, alpha = .2, filename = "TA_OPs_500_res")
 # fancy_plot(19, 100, 33, TA_OPs_100_avg, 20, linewidth = .4, filename="TA_OPs_100_res")
-# fancy_NoOffset(20, 50, TA_OPs_density_massless_avg, filename = "TA_OPs_massless_density")
-# fancy_plot(21, 50, 16, TA_OPs_SA_massless_avg, 25, filename = "TA_OPs_massless_SA")
+fancy_NoOffset(20, 50, TA_OPs_density[15], filename = "TA_OPs_density_individual")
+fancy_plot(21, 50, 16, TA_OPs_SA[17], 25, filename = "TA_OPs_SA_individual")
 
 print(TA_OPs_SA_avg[15])
-'''
+
 plt.show()
 
 

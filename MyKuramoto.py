@@ -27,7 +27,7 @@ import small_world as sw
 head_dir = "C:/Users/billy/PycharmProjects/Kuramoto"
 #head_dir = "/data/jux/bqqian/Kuramoto"
 
-N, alpha, dt, frequencyBound, steps, startDelay, endDelay = gg.size, .2, .02, gg.freqBound, 500, gg.numTransitionGraphs// 3,gg.numTransitionGraphs // 3
+N, alpha, dt, frequencyBound, steps, startDelay, endDelay = gg.size, .3, .02, gg.freqBound, 250, 0,0
 m = 2
 D = 1
 f = dt / m
@@ -72,10 +72,11 @@ def Jacobian(init, t, A, w_nat, a, M):
     theta, omega = init[:N, ], init[N:, ]
     block_11 = np.zeros((N, N))
     block_21 = np.identity(N)
-    block_22 = -D/m * np.identity(N)
+    block_22 = -D/M * np.identity(N)
     block_12 = np.zeros((N,N))
+    print("jacobian")
     for i in range(N):
-        block_12[i] = np.inner(A[i], np.cos(theta - theta[i]))
+        block_12[i] = np.dot(A[i], np.cos(theta - theta[i]))
         block_12[i,i] = -np.sum(block_21[i])
     block_12 *= a/M
     return np.block([[block_11, block_12], [block_21, block_22]])
@@ -95,8 +96,8 @@ def runRK2(A, phases0, w_nat, w0, a, M, time):
         complex_r = complex_OP2(theta[t])
         standardOPData.append(abs(complex_r))
        # complex_OP.append(complex_r)
-        #inst_phases.append(theta[t])
-       # inst_freqs.append(omega[t])
+        inst_phases.append(theta[t])
+        inst_freqs.append(omega[t])
         # localOPData.append(localOrderParameter(A, theta[t]))
         # localOPData.append(LOP2(A, theta[t], nz))
     return theta, omega
@@ -492,60 +493,60 @@ def plot(AList, col, width=.4, size=25, transp=1, e_s=end_s, e_f=end_f, IP=inst_
     '''
 
 
-    # x = np.ones((N, 3))
-    # y = np.ones((N, 3))
-    #
-    # x[:, 0:3] = (1, 0, 0)
-    # y[:, 0:3] = (0, 1, 0)
-    # c = np.linspace(0, 1, N)[:, None]
-    # gradient = x + (y - x) * c
-    # f_phase_fancy = plt.figure(10)
-    # #plt.figure(dpi=200)
-    # plt.tight_layout()
-    # IP = (np.array(IP) + np.pi) % (2 * np.pi) - np.pi
-    # IF = np.array(IF)
-    #
-    # sorted_indices = np.argsort(gg.freqs)
-    # IP_sorted = np.transpose(IP)[sorted_indices[::1]]
-    # IF_sorted = np.transpose(IF)[sorted_indices[::1]]
-    # IP_sorted = np.transpose(IP_sorted)
-    # IF_sorted = np.transpose(IF_sorted)
-    # plt.pause(3)
-    # for i in range(0, len(timeArray), 15):
-    #     plt.clf()
-    #     plt.xlabel('phase')
-    #     plt.ylabel('frequency')
-    #     title = "Phase Space Plot" + " (Time: " + str(round(i * dt)) + ")"
-    #     if i / steps <= startDelay:
-    #         title += " (Start Delay)"
-    #     elif i / steps >= len(AList) + startDelay:
-    #         title += " (End Delay)"
-    #     plt.title(title)
-    #     axes = plt.gca()
-    #     axes.set_xlim([-np.pi, np.pi])
-    #     axes.set_ylim([-5, 5])
-    #     if i >= 4:
-    #         plt.scatter(IP_sorted[i - 4, ::], IF_sorted[i - 4, ::], c=gradient, s=8, alpha=.2)
-    #         plt.scatter(IP_sorted[i-3, ::], IF_sorted[i-3, ::], c=gradient, s=11, alpha = .4)
-    #         plt.scatter(IP_sorted[i - 2, ::], IF_sorted[i - 2, ::], c=gradient, s=14, linewidth=.2,
-    #                     alpha=.6)
-    #         plt.scatter(IP_sorted[i - 1, ::], IF_sorted[i - 1, ::], c=gradient, s=17, linewidth=.2,
-    #                     alpha=.8)
-    #     # curr_graph = AList[i // steps]
-    #     # x_coords = []
-    #     # y_coords = []
-    #     # for r in range(len(curr_graph)):
-    #     #     for c in range(r, len(curr_graph)):
-    #     #         if curr_graph[r][c] != 0:
-    #     #             x_coords.append(IP_sorted[i, r])
-    #     #             x_coords.append(IP_sorted[i, c])
-    #     #             y_coords.append(IF_sorted[i, r])
-    #     #             y_coords.append(IF_sorted[i, c])
-    #     # plt.plot(x_coords, y_coords, linewidth=.1, color="black", alpha=.2)
-    #     plt.scatter(IP_sorted[i], IF_sorted[i], c=gradient, s=20, edgecolors = 'black', linewidth = 1)
-    #
-    #     plt.pause(1e-10)
-    # plt.close()
+    x = np.ones((N, 3))
+    y = np.ones((N, 3))
+
+    x[:, 0:3] = (1, 0, 0)
+    y[:, 0:3] = (0, 1, 0)
+    c = np.linspace(0, 1, N)[:, None]
+    gradient = x + (y - x) * c
+    f_phase_fancy = plt.figure(10)
+    #plt.figure(dpi=200)
+    plt.tight_layout()
+    IP = (np.array(IP) + np.pi) % (2 * np.pi) - np.pi
+    IF = np.array(IF)
+
+    sorted_indices = np.argsort(gg.freqs)
+    IP_sorted = np.transpose(IP)[sorted_indices[::1]]
+    IF_sorted = np.transpose(IF)[sorted_indices[::1]]
+    IP_sorted = np.transpose(IP_sorted)
+    IF_sorted = np.transpose(IF_sorted)
+    plt.pause(3)
+    for i in range(0, len(timeArray), 15):
+        plt.clf()
+        plt.xlabel('phase')
+        plt.ylabel('frequency')
+        title = "Phase Space Plot" + " (Time: " + str(round(i * dt)) + ")"
+        if i / steps <= startDelay:
+            title += " (Start Delay)"
+        elif i / steps >= len(AList) + startDelay:
+            title += " (End Delay)"
+        plt.title(title)
+        axes = plt.gca()
+        axes.set_xlim([-np.pi, np.pi])
+        axes.set_ylim([-5, 5])
+        if i >= 4:
+            plt.scatter(IP_sorted[i - 4, ::], IF_sorted[i - 4, ::], c=gradient, s=8, alpha=.2)
+            plt.scatter(IP_sorted[i-3, ::], IF_sorted[i-3, ::], c=gradient, s=11, alpha = .4)
+            plt.scatter(IP_sorted[i - 2, ::], IF_sorted[i - 2, ::], c=gradient, s=14, linewidth=.2,
+                        alpha=.6)
+            plt.scatter(IP_sorted[i - 1, ::], IF_sorted[i - 1, ::], c=gradient, s=17, linewidth=.2,
+                        alpha=.8)
+        # curr_graph = AList[i // steps]
+        # x_coords = []
+        # y_coords = []
+        # for r in range(len(curr_graph)):
+        #     for c in range(r, len(curr_graph)):
+        #         if curr_graph[r][c] != 0:
+        #             x_coords.append(IP_sorted[i, r])
+        #             x_coords.append(IP_sorted[i, c])
+        #             y_coords.append(IF_sorted[i, r])
+        #             y_coords.append(IF_sorted[i, c])
+        # plt.plot(x_coords, y_coords, linewidth=.1, color="black", alpha=.2)
+        plt.scatter(IP_sorted[i], IF_sorted[i], c=gradient, s=20, edgecolors = 'black', linewidth = 1)
+
+        plt.pause(1e-10)
+    plt.close()
 
     # sorted_indices = np.argsort(gg.freqs)
     # IP_sorted = np.transpose(IP)[sorted_indices[::1]]
@@ -827,7 +828,7 @@ if __name__ == '__main__':
     #MA_Graphs.append(gg.readMatrixFromFile(misaligned_files[0]))
     #freq_mod_Graphs.append(gg.readMatrixFromFile(freq_mod_Files[0]))
 
-    AList, freqs = get_AList(ER_Graphs[0], ER_Graphs[0], dens_const=True)
+    AList, freqs = get_AList(ER_Graphs[0], SA_Graphs[0], dens_const=True)
     ICs = get_ICs()
     #freqs = gg.readMatrifxFromFile(open(path_random_nat_freqs+str(2)+".txt", "r"))[0]
     #ICs = get_ICs(open(path_random_ICs+str(arg_1)+".txt", "r"))
