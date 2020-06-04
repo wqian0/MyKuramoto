@@ -1,12 +1,12 @@
 from scipy.integrate import ode, odeint
 import numpy as np
 import matplotlib.pyplot as plt
-x = np.linspace(-np.pi, np.pi, 10000)
-y = np.linspace(-2, 2, 10000)
+x = np.linspace(-np.pi, np.pi, 100)
+y = np.linspace(-1.5, 1.5, 100)
 X, Y = np.meshgrid(x, y)
 
 def first_order_plot(fig_num, w, a, phi):
-    plt.figure(fig_num)
+    plt.figure(fig_num, dpi = 200)
     plt.rcParams.update({'font.size': 14})
     plt.title("first order plot")
     plt.xlabel(r"$\theta$")
@@ -21,7 +21,7 @@ def first_order_plot(fig_num, w, a, phi):
     plt.tight_layout()
 
 def second_order_plot(fig_num, m, w, a, phi):
-    plt.figure(fig_num)
+    plt.figure(fig_num, dpi = 200)
     plt.rcParams.update({'font.size': 14})
     plt.title("second order plot")
     plt.xlabel(r"$\theta$")

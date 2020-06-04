@@ -19,8 +19,8 @@ nrd.seed(rSeed)
 freqs, size, dE, numTransitionGraphs, modules, pModular, finalEdges, freqBound = [], 100, 20, 50, 5, 0.98, 1000, 3
 clusters = []
 
-#head_dir = "/data/jux/bqqian/Kuramoto"
-head_dir = "C:/Users/billy/PycharmProjects/Kuramoto"
+head_dir = "/data/jux/bqqian/Kuramoto"
+#head_dir = "C:/Users/billy/PycharmProjects/Kuramoto"
 # network size
 def matrix(m, n, val):
     M = []

@@ -5,7 +5,7 @@ import copy
 from random import choice
 from array import *
 import time
-import os
+import os, glob
 import small_world as sw
 import scipy as sp
 import multiprocessing as mp
@@ -15,6 +15,7 @@ from matplotlib.lines import Line2D
 import GraphGenerator as gg
 import MyKuramoto as mK
 
+trials_dir = "C:/Users/billy/PycharmProjects/Kuramoto2020/6400 trials/"
 TA_OPs_Files_density = []
 TA_OPs_Files_SA = []
 TA_OPs_Files_MA = []
@@ -46,7 +47,7 @@ TA_OPs_50 = []
 TA_OPs_density_massless = []
 TA_OPs_SA_massless = []
 
-
+'''
 for i in range(25):
     TA_OPs_Files_density.append(open("TA_OPs_randomized_density "+str(i)+".txt", "r"))
     TA_OPs_Files_SA.append(open("TA_OPs_ER_SA_ER " + str(i) + ".txt", "r"))
@@ -147,9 +148,24 @@ TA_OPs_SA_massless_avg /= 25
 TA_OPs_Mod_avg[0] = TA_OPs_Mod_avg[1]
 TA_OPs_freqmod_avg[0] = TA_OPs_freqmod_avg[1]
 
+'''
+def read_all_data(dir, trials, n, a_start, a_inc, M_start, M_inc):
+    counts = np.zeros((n, n))
+    TA_OPs = np.zeros((16, 16, 134))
+    for filename in glob.glob(os.path.join(dir, '*.txt')):
+        with open(filename, 'r') as f:
+            line = [float(j) for j in (filename[62:])[:-5].strip().split(' ')]
+            row = n - 1 - int(round((line[2] - a_start) / a_inc))
+            col = int(round((line[3] - M_start) / M_inc))
+            TA_data = gg.readMatrixFromFile(f)[0]
+            if abs(TA_data[0]-TA_data[16]) < .05:
+                TA_OPs[row, col, :] += TA_data
+                counts[row][col] += 1
+    return TA_OPs, counts
+
 def fancy_plot(fignum, size, delay, data, markersize, linewidth = .5, alpha = 1, hline = False, hline_loc = 0.5, filename = None):
     plt.rcParams.update({'font.size': 16})
-    fig = plt.figure(fignum, dpi = 3000)
+    fig = plt.figure(fignum)
     ##CHANGE DPI TO 3000 WHEN SAVING PLOT
     plt.xlabel('Graph Index', size=20)
     plt.ylabel('Order Parameter, ' + r'$\langle R \rangle$', size=20)
@@ -197,7 +213,7 @@ def fancy_NoOffset(fignum,inputSize, data, filename = None):
         plt.savefig(filename +'.pdf')
         plt.savefig(filename + '.png')
 
-
+'''
 density_std = np.zeros(len(TA_OPs_density[0]))
 for i in range(len(density_std)):
     density_std[i] = np.std([TA_OPs_density[j][i] for j in range(len(TA_OPs_density))])
@@ -251,6 +267,7 @@ for i in range(0,25,25):
 # plt.fill_between(list(range(len(TA_OPs_SA_avg) // 2)), np.array(list(reversed(TA_OPs_SA_avg[len(TA_OPs_SA_avg) // 2:])))- np.array(list(reversed(SA_std[(len(TA_OPs_SA_avg) // 2):]))),
 #                 np.array(list(reversed(TA_OPs_SA_avg[len(TA_OPs_SA_avg) // 2:]))) + np.array(list(
 #                    reversed(SA_std[(len(TA_OPs_SA_avg) // 2):]))), color = "red", alpha =.1)
+'''
 '''
 plt.rcParams.update({'font.size': 16})
 f6 = plt.figure(6, dpi = 3000)
@@ -362,6 +379,7 @@ plt.axvline(x=mK.startDelay, color='red', linewidth=1)
 #plt.show()
 
 '''
+'''
 #fancy_plot(17, 250, 83, TA_OPs_250_avg, 15)
 # fancy_plot(18, 500, 166, TA_OPs_500_avg, 10, linewidth = .005, alpha = .2, filename = "TA_OPs_500_res")
 # fancy_plot(19, 100, 33, TA_OPs_100_avg, 20, linewidth = .4, filename="TA_OPs_100_res")
@@ -369,7 +387,15 @@ fancy_NoOffset(20, 50, TA_OPs_density[15], filename = "TA_OPs_density_individual
 fancy_plot(21, 50, 16, TA_OPs_SA[17], 25, filename = "TA_OPs_SA_individual")
 
 print(TA_OPs_SA_avg[15])
-
+'''
+TA_OPs, counts = read_all_data(trials_dir, 25, 16, .2, .02, 1, .1)
+print(TA_OPs.shape)
+for r in range(16):
+    for c in range(16):
+        TA_OPs[r][c] /= counts[r][c]
+fancy_plot(1, 50, 16, TA_OPs[12][14],25)
+print(counts)
+print(counts[10][10])
 plt.show()
 
 
