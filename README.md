@@ -1,6 +1,6 @@
 # MyKuramoto
 
-Investigates how time-varying connectivity affects synchronization phenomena in networks of coupled oscillators with inertia.  
+This project ivestigates how time-varying connectivity affects synchronization phenomena in networks of coupled
 
 Below is a phase space animation of 100 inertial oscillators undergoing a symmetric network rewiring pathway, yet behaving asymmetrically in time:
 
