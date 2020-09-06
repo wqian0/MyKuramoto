@@ -2,7 +2,7 @@
 import numpy as np
 from numpy import random as nrd
 import random as rd
-import copy
+from copy import deepcopy
 from random import choice
 from array import *
 import time
@@ -27,16 +27,6 @@ clusters = []
 
 # head_dir = "/data/jux/bqqian/Kuramoto"
 head_dir = "C:/Users/billy/PycharmProjects/Kuramoto"
-
-
-def matrix(m, n, val):
-    M = []
-    for i in range(m):
-        row = []
-        for j in range(n):
-            row.append(val)
-        M.append(row)
-    return np.array(M)
 
 def getRandomDistribution(N, lowerBound, upperBound):
     list = [rd.uniform(lowerBound, upperBound) for i in range(N)]
@@ -73,16 +63,8 @@ def readMatrixFromFile(f):
         result.append(line)
     return np.array(result)
 
-
-def getMatrixCopy(M):
-    copy = matrix(len(M), len(M[0]), 0)
-    for r in range(len(M)):
-        for c in range(len(M[0])):
-            copy[r][c] = M[r][c]
-    return np.array(copy)
-
 def get_laplacian(A):
-    result = -getMatrixCopy(A)
+    result = -deepcopy(A)
     for i in range(len(result[0])):
         result[i][i] += np.sum(A[i])
     return result
@@ -112,7 +94,7 @@ def get_random_laplaced(n, edges, frequencies, gAttempts, attempts, shared=None)
 
 
 def get_random_graph(n, edges):
-    A = matrix(n, n, 0)
+    A = np.zeros((n, n))
     possibleEdges = []
     for r in range(n - 1):
         for c in range(r + 1, n):
@@ -130,7 +112,7 @@ def get_random_modular(n, modules, edges, p, getCommInfo=False, shared=None):
     assignments = np.zeros(n)
     for i in range(modules):
         pairings[i] = []
-    adjMatrix = matrix(n, n, 0)
+    adjMatrix = np.zeros((n, n))
     for i in range(n):
         randomModule = rd.randint(0, modules)
         pairings[randomModule].append(i)
@@ -169,7 +151,7 @@ def rewire_to_endGraph(n, A_start, A_end, numGraphs, file):
     toRewire = []
     available = []
     diff = 0
-    copy = getMatrixCopy(A_start)
+    copy = deepcopy(A_start)
     for r in range(n):
         for c in range(r, n):
             if A_start[r][c] == 1:
@@ -226,7 +208,7 @@ def rewire_randomly(n, A_start, numGraphs, numRewired, file):
     for i in range(n):
         available[i] = []
 
-    copy = getMatrixCopy(A_start)
+    copy = deepcopy(A_start)
     for r in range(n):
         for c in range(r, n):
             if A_start[r][c] == 1:
@@ -281,7 +263,7 @@ def get_random_freq_modular(n, modules, edges, p, frequencies, rangeStart, range
     assignments = np.zeros(n)
     for i in range(modules):
         pairings[i] = []
-    adjMatrix = matrix(n, n, 0)
+    adjMatrix = np.zeros((n, n))
     for i in range(n):
         module = int(np.round((frequencies[i] - rangeStart) / (rangeEnd - rangeStart) * (modules - 1)))
         pairings[module].append(i)
@@ -344,17 +326,17 @@ def rearrangeMatrix(A, rearrangements):
     for i in range(rearrangements):
         randIndex1 = rd.randint(0, len(B) - 1)
         randIndex2 = rd.randint(0, len(B) - 1)
-        tempRow = copy.deepcopy(B[randIndex1])
-        B[randIndex1] = copy.deepcopy(B[randIndex2])
+        tempRow = deepcopy(B[randIndex1])
+        B[randIndex1] = deepcopy(B[randIndex2])
         B[randIndex2] = tempRow
-        tempCol = copy.deepcopy(B[:, randIndex1])
-        B[:, randIndex1] = copy.deepcopy(B[:, randIndex2])
+        tempCol = deepcopy(B[:, randIndex1])
+        B[:, randIndex1] = deepcopy(B[:, randIndex2])
         B[:, randIndex2] = tempCol
     return B
 
 
 def flipEdge(n, A):
-    B = getMatrixCopy(A)
+    B = deepcopy(A)
     edges = []
     empty = []
     for r in range(n - 1):
@@ -375,7 +357,7 @@ def flipEdge(n, A):
 def getBetterLapArrangement(n, A, freq_vec, attempts):
     currScore = 0
     maxVal = -float('inf')
-    curr = getMatrixCopy(A)
+    curr = deepcopy(A)
     best = curr
     for i in range(attempts):
         evals, v = sp.linalg.eigh(get_laplacian(curr), eigvals=(n - 1, n - 1))
@@ -390,8 +372,8 @@ def getBetterLapArrangement(n, A, freq_vec, attempts):
 def getBetterArrangement(n, A_start, A_end, attempts):
     count = 0
     minCount = float('inf')
-    copy = np.array(getMatrixCopy(A_end))
-    best = getMatrixCopy(copy)
+    copy = np.array(deepcopy(A_end))
+    best = deepcopy(copy)
     for i in range(attempts):
         for r in range(n):
             for c in range(r, n):
@@ -399,7 +381,7 @@ def getBetterArrangement(n, A_start, A_end, attempts):
                     count += 1
         if count < minCount:
             minCount = count
-            best = getMatrixCopy(copy)
+            best = deepcopy(copy)
         copy = rearrangeMatrix(best, 1)
         count = 0
         print(minCount)
@@ -409,8 +391,8 @@ def getBetterArrangement(n, A_start, A_end, attempts):
 def getWorstArrangement(n, A_start, A_end, attempts):
     count = 0
     maxCount = 0
-    copy = np.array(getMatrixCopy(A_end))
-    best = getMatrixCopy(copy)
+    copy = np.array(deepcopy(A_end))
+    best = deepcopy(copy)
     for i in range(attempts):
         for r in range(n):
             for c in range(r, n):
@@ -418,7 +400,7 @@ def getWorstArrangement(n, A_start, A_end, attempts):
                     count += 1
         if count > maxCount:
             maxCount = count
-            best = getMatrixCopy(copy)
+            best = deepcopy(copy)
         copy = rearrangeMatrix(best, 1)
         count = 0
         print(maxCount)
@@ -429,8 +411,8 @@ def getWorstArrangement(n, A_start, A_end, attempts):
 def get_inbetween_matrices(n, A_start, A_end, numGraphs, file):
     delete = []
     add = []
-    copy = getMatrixCopy(A_start)
-    copyEnd = getMatrixCopy(A_end)
+    copy = deepcopy(A_start)
+    copyEnd = deepcopy(A_end)
     for r in range(n):
         for c in range(r, n):
             if A_start[r][c] == 1 and copyEnd[r][c] == 0:
@@ -468,7 +450,7 @@ def get_inbetween_matrices(n, A_start, A_end, numGraphs, file):
 
 def make_grid(rows, cols):
     n = rows * cols
-    M = matrix(n, n, 0)
+    M = np.zeros((n, n))
     for r in range(rows):
         for c in range(cols):
             i = r * cols + c
@@ -480,7 +462,7 @@ def make_grid(rows, cols):
                 M[i - cols][i] = M[i][i - cols] = 1
     return M
 def addEdges(M, edges):
-    copy = getMatrixCopy(M)
+    copy = deepcopy(M)
     for i in range(edges):
         randomRow = rd.randint(0, len(copy) - 1)
         randomCol = rd.randint(0, len(copy[0]) - 1)
@@ -584,5 +566,4 @@ if __name__ == "__main__":
     cbar.ax.tick_params(labelsize=16)
     plt.tight_layout()
     plt.savefig('Freq Modular Network.pdf')
-    #plt.show()
 
